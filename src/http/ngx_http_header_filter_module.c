@@ -394,7 +394,9 @@ ngx_http_header_filter(ngx_http_request_t *r)
         }
 
     } else {
-        len += sizeof("Connection: close" CRLF) - 1;
+        if (clcf->keepalive_header != 0) {
+            len += sizeof("Connection: close" CRLF) - 1;
+        }
     }
 
 #if (NGX_HTTP_GZIP)
@@ -565,8 +567,10 @@ ngx_http_header_filter(ngx_http_request_t *r)
         }
 
     } else {
-        b->last = ngx_cpymem(b->last, "Connection: close" CRLF,
-                             sizeof("Connection: close" CRLF) - 1);
+        if (clcf->keepalive_header != 0){
+            b->last = ngx_cpymem(b->last, "Connection: close" CRLF,
+                                  sizeof("Connection: close" CRLF) - 1);
+        }
     }
 
 #if (NGX_HTTP_GZIP)
